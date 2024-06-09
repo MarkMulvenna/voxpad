@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/GradientButton.dart';
+import '../widgets/gradient_button.dart';
 
 class GradientButtonScreen extends StatelessWidget {
   final int columns;

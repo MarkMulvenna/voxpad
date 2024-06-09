@@ -8,7 +8,7 @@ class MediaController extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
-        fit: StackFit.expand, // Ensure the Stack fills the entire screen
+        fit: StackFit.expand, 
         children: [
           Positioned.fill(
             child: Image.asset(
@@ -55,28 +55,28 @@ class MediaController extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
-                            iconSize: 60, // Increase icon size
+                            iconSize: 60, 
                             icon: const Icon(Icons.skip_previous),
                             onPressed: () {
                               // Add functionality for previous button
                             },
                           ),
                           IconButton(
-                            iconSize: 60, // Increase icon size
+                            iconSize: 60, 
                             icon: const Icon(Icons.play_arrow),
                             onPressed: () {
                               // Add functionality for play/pause button
                             },
                           ),
                           IconButton(
-                            iconSize: 60, // Increase icon size
+                            iconSize: 60,
                             icon: const Icon(Icons.skip_next),
                             onPressed: () {
                               // Add functionality for next button
                             },
                           ),
                           IconButton(
-                            iconSize: 60, // Increase icon size
+                            iconSize: 60,
                             icon: const Icon(Icons.stop),
                             onPressed: () {
                               // Add functionality for stop button
