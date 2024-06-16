@@ -3,7 +3,12 @@ import 'package:vox_pad/user_interface/widgets/settings_category_list.dart';
 import 'package:vox_pad/user_interface/widgets/settings_display_on_off.dart';
 import 'package:vox_pad/user_interface/widgets/settings_display_text.dart';
 
+import '../widgets/back_button.dart';
+import 'main_menu.dart';
+
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -87,7 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return Center(
         child: Text(
           'Settings for ${categories[selectedCategoryIndex]}',
-          style: TextStyle(fontSize: 24),
+          style: const TextStyle(fontSize: 24),
         ),
       );
     }
@@ -97,8 +102,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
         backgroundColor: Colors.blueGrey,
+        title: const Row(
+          children: [
+            BackButtonWidget(destination: MainMenu(columns: 4, rows: 3)),
+            SizedBox(width: 8),
+            Text('Settings'),
+          ],
+        ),
       ),
       body: Row(
         children: [

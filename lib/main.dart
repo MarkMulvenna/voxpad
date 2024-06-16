@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vox_pad/user_interface/screens/settings_screen.dart';
+import 'package:vox_pad/user_interface/screens/connection_screen.dart'; // Import your connection_screen.dart file
 
 void main() {
   runApp(MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blueGrey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: SettingsScreen(),
+      home: ModifyConnectionScreen(), // Update to ConnectionScreen()
     );
   }
 }

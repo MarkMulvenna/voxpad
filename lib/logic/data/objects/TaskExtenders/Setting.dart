@@ -10,7 +10,7 @@ class Setting {
   String description;
   SettingCategory category;
   String? value;
-  bool? settingOn;  // Corrected to bool
+  bool? settingOn;
 
   Setting(this.id, this.name, this.description, this.category, this.value, this.settingOn);
 
