@@ -17,7 +17,6 @@ class SharedPreferencesService {
     List<String>: (SharedPreferences prefs, String key) => prefs.getStringList(key),
   };
 
-  // Save a value (string, int, bool, double, List<String>)
   static Future<void> saveValue<T>(String key, T value) async {
     final prefs = await SharedPreferences.getInstance();
     final saveFunction = _saveValueFunctions[T];
@@ -28,7 +27,6 @@ class SharedPreferencesService {
     }
   }
 
-  // Retrieve a value (string, int, bool, double, List<String>)
   static Future<T?> getValue<T>(String key) async {
     final prefs = await SharedPreferences.getInstance();
     final getFunction = _getValueFunctions[T];
@@ -39,13 +37,11 @@ class SharedPreferencesService {
     }
   }
 
-  // Remove a specific key-value pair
   static Future<void> remove(String key) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(key);
   }
 
-  // Clear all key-value pairs
   static Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();

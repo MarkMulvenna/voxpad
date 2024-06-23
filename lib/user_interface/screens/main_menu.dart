@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:vox_pad/user_interface/screens/settings_screen.dart';
 import '../widgets/gradient_button.dart';
 
-class GradientButtonScreen extends StatelessWidget {
+class MainMenu extends StatelessWidget {
   final int columns;
   final int rows;
 
-  const GradientButtonScreen({
+  const MainMenu({
     super.key,
     required this.columns,
     required this.rows,
@@ -39,7 +40,9 @@ class GradientButtonScreen extends StatelessWidget {
             child: IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () {
-
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const SettingsScreen())
+                );
               },
             ),
           ),

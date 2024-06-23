@@ -12,7 +12,6 @@ Setting _$SettingFromJson(Map<String, dynamic> json) => Setting(
       json['description'] as String,
       $enumDecode(_$SettingCategoryEnumMap, json['category']),
       json['value'] as String?,
-      json['settingOn'] as bool?,
     );
 
 Map<String, dynamic> _$SettingToJson(Setting instance) => <String, dynamic>{
@@ -21,7 +20,6 @@ Map<String, dynamic> _$SettingToJson(Setting instance) => <String, dynamic>{
       'description': instance.description,
       'category': _$SettingCategoryEnumMap[instance.category]!,
       'value': instance.value,
-      'settingOn': instance.settingOn,
     };
 
 const _$SettingCategoryEnumMap = {

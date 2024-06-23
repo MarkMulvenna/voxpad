@@ -9,10 +9,10 @@ class Setting {
   String name;
   String description;
   SettingCategory category;
-  String? value;
-  bool? settingOn;  // Corrected to bool
+  dynamic value;
 
-  Setting(this.id, this.name, this.description, this.category, this.value, this.settingOn);
+
+  Setting(this.id, this.name, this.description, this.category, this.value);
 
   factory Setting.fromJson(Map<String, dynamic> json) => _$SettingFromJson(json);
   Map<String, dynamic> toJson() => _$SettingToJson(this);  // Corrected method name
