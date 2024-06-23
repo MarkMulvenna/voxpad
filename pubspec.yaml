@@ -22,6 +22,9 @@ dependencies:
   connectivity_plus: ^2.0.2
   wifi_info_plugin_plus: ^2.0.2
   fluttertoast: ^8.0.8
+  chewie: ^1.8.1
+  video_player: ^2.8.7
+  video_player_win: ^2.3.8
 
 
 dev_dependencies:

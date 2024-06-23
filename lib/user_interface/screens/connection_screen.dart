@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:vox_pad/logic/data/objects/ServerConfiguration.dart';
-import 'package:vox_pad/logic/services/SharedPreferencesService.dart';
+import 'package:vox_pad/logic/services/ServerConfigurationService.dart';
+import 'package:vox_pad/logic/services/WebsiteServices.dart';
 import '../../logic/services/NetworkService.dart';
 
-class ModifyConnectionScreen extends StatefulWidget {
+class ConnectionScreen extends StatefulWidget {
   final String initialName;
   final String initialIp;
   final String initialPort;
 
-  const ModifyConnectionScreen({super.key,
+  const ConnectionScreen({
+    super.key,
     this.initialName = 'Default',
     this.initialIp = '',
     this.initialPort = '5000',
   });
 
   @override
-  _ModifyConnectionScreenState createState() => _ModifyConnectionScreenState();
+  _ConnectionScreenState createState() => _ConnectionScreenState();
 }
 
-class _ModifyConnectionScreenState extends State<ModifyConnectionScreen> {
+class _ConnectionScreenState extends State<ConnectionScreen> {
   late TextEditingController _nameController;
   late TextEditingController _ipController;
   late TextEditingController _portController;
@@ -39,6 +41,24 @@ class _ModifyConnectionScreenState extends State<ModifyConnectionScreen> {
         _ipController.text = ipAddress;
       });
     } catch (e) {}
+  }
+
+  ServerConfiguration? verifyServerConfiguration() {
+    if (_nameController.text.isNotEmpty &&
+        _ipController.text.isNotEmpty &&
+        _portController.text.isNotEmpty) {
+      ServerConfiguration configuration = ServerConfiguration(
+          name: _nameController.text,
+          host: _ipController.text,
+          port: int.parse(_portController.text));
+      return configuration;
+    } else {
+      return null;
+    }
+  }
+
+  bool isNullOrEmpty(String? value) {
+    return value == null || value.isEmpty;
   }
 
   @override
@@ -64,23 +84,27 @@ class _ModifyConnectionScreenState extends State<ModifyConnectionScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-
-              _buildNetworkConfigurationTextbox('Name', _nameController, (value) {}),
+              _buildNetworkConfigurationTextbox(
+                  'Name', _nameController, (value) {}),
               const SizedBox(height: 20),
-
-              _buildNetworkConfigurationTextbox('IP', _ipController, (value) {}),
+              _buildNetworkConfigurationTextbox(
+                  'IP', _ipController, (value) {}),
               const SizedBox(height: 20),
-
-              _buildNetworkConfigurationTextbox('Port', _portController, (value) {}),
+              _buildNetworkConfigurationTextbox(
+                  'Port', _portController, (value) {}),
               const SizedBox(height: 20),
-
               ElevatedButton(
                 onPressed: () {
-                  //SaveConfiguration();
+                  ServerConfiguration? config = verifyServerConfiguration();
+                  if (config != null) {
+                    ServerConfigurationService.addOrUpdateServerConfiguration(
+                        config.name, config);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple[200],
-                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
                 ),
                 child: const Text('Save Configuration'),
               ),
@@ -92,10 +116,10 @@ class _ModifyConnectionScreenState extends State<ModifyConnectionScreen> {
   }
 
   Widget _buildNetworkConfigurationTextbox(
-      String label,
-      TextEditingController controller,
-      ValueChanged<String> onChanged,
-      ) {
+    String label,
+    TextEditingController controller,
+    ValueChanged<String> onChanged,
+  ) {
     return TextField(
       controller: controller,
       onChanged: onChanged,
@@ -106,4 +130,3 @@ class _ModifyConnectionScreenState extends State<ModifyConnectionScreen> {
     );
   }
 }
-

@@ -6,7 +6,7 @@ class ServerConfigurationService {
 
   static const String _serverKeyPrefix = 'serverConfig_';
 
-  static Future<void> saveServerConfiguration(String name, ServerConfiguration config) async {
+  static Future<void> addOrUpdateServerConfiguration(String name, ServerConfiguration config) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('$_serverKeyPrefix$name', jsonEncode(config.toJson()));
   }
@@ -33,6 +33,11 @@ class ServerConfigurationService {
       }
     }
     return configurations;
+  }
+
+  static Future<ServerConfiguration?> getFirstServerConfiguration() async {
+    final List<ServerConfiguration> allConfigurations = await getAllServerConfigurations();
+    return allConfigurations.isNotEmpty ? allConfigurations.first : null;
   }
 
   static Future<void> removeServerConfiguration(String name) async {

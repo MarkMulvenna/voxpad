@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:vox_pad/logic/services/TokenService.dart';
 
 class WebServices {
-  final String baseUrl;
+  String baseUrl = "/api/v1.0/";
   String token;
 
   WebServices(this.baseUrl, this.token);
@@ -61,6 +61,21 @@ class WebServices {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete data');
+    }
+  }
+
+  Future<bool> testConnection(String endpoint) async {
+    try {
+      final url = Uri.https(baseUrl, endpoint);
+      final response = await http.get(
+        url,
+        headers: _createHeaders(),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Error testing connection: $e');
+      return false;
     }
   }
 
