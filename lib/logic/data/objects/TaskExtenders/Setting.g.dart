@@ -7,24 +7,17 @@ part of 'Setting.dart';
 // **************************************************************************
 
 Setting _$SettingFromJson(Map<String, dynamic> json) => Setting(
-      json['id'] as String,
+      json['id'] as String?,
       json['name'] as String,
-      json['description'] as String,
-      $enumDecode(_$SettingCategoryEnumMap, json['category']),
-      json['value'] as String?,
+      json['description'] as String?,
+      json['category'] as String?,
+      json['value'],
     );
 
 Map<String, dynamic> _$SettingToJson(Setting instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'description': instance.description,
-      'category': _$SettingCategoryEnumMap[instance.category]!,
+      'category': instance.category,
       'value': instance.value,
     };
-
-const _$SettingCategoryEnumMap = {
-  SettingCategory.General: 'General',
-  SettingCategory.Appearance: 'Appearance',
-  SettingCategory.Layout: 'Layout',
-  SettingCategory.WebConfiguration: 'WebConfiguration',
-};
