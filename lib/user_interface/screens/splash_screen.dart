@@ -2,9 +2,18 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:provider/provider.dart';
+import 'package:vox_pad/logic/data/objects/StateManager.dart';
+import 'package:vox_pad/logic/services/ServerConfigurationService.dart';
+import 'package:vox_pad/logic/services/SettingsService.dart';
+import 'package:vox_pad/logic/services/InitialisationService.dart';
+import 'package:vox_pad/user_interface/screens/connection_screen.dart';
+import 'package:vox_pad/user_interface/screens/main_menu.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -12,14 +21,43 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   late VideoPlayerController _videoPlayerController;
   late ChewieController _chewieController;
+  late InitialisationService _initialisationService;
+  bool _hasPlayedOnce = false;
 
   @override
   void initState() {
     super.initState();
+    final stateManager = Provider.of<StateManager>(context, listen: false);
+    _initialisationService = InitialisationService(
+      ServerConfigurationService(),
+      stateManager,
+    );
+
     if (Platform.isWindows) {
       _initializeWindowsVideo();
     } else {
       _initializeChewie();
+    }
+  }
+
+  Future<void> _initializeApp() async {
+    bool initialised = await _initialisationService.initialise();
+    if (mounted) {
+      if (initialised) {
+        var buttonLayout = _initialisationService.settingsService.getSettingValue("ButtonLayout", defaultValue: [3, 4]);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainMenu(columns: buttonLayout[0], rows: buttonLayout[1])),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ConnectionScreen()),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Settings could not be loaded.')),
+        );
+      }
     }
   }
 
@@ -31,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _initializeWindowsVideo() {
-    String filePath = 'lib/res/voXPAD.mp4'; // Update with your correct file path
+    String filePath = 'lib/res/voXPAD.mp4';
 
     if (File(filePath).existsSync()) {
       _videoPlayerController = VideoPlayerController.file(File(filePath));
@@ -41,38 +79,54 @@ class _SplashScreenState extends State<SplashScreen> {
 
     _videoPlayerController.initialize().then((_) {
       setState(() {});
-      _videoPlayerController.setLooping(true); // Enable looping
-      _videoPlayerController.play(); // Auto-play the video
-    }).catchError((error) {
-      print('Failed to initialize video: $error');
-    });
+      _videoPlayerController.setLooping(false);
+      _videoPlayerController.play();
 
-    _videoPlayerController.addListener(() {
-      if (_videoPlayerController.value.isCompleted) {
-        // Handle completion if needed
+      _videoPlayerController.addListener(() {
+        if (_videoPlayerController.value.position == _videoPlayerController.value.duration) {
+          _hasPlayedOnce = true;
+          _videoPlayerController.setLooping(true);
+          _videoPlayerController.play();
+          _initializeApp();
+        }
+      });
+    }).catchError((error) {
+      if (kDebugMode) {
+        print('Failed to initialize video: $error');
       }
     });
   }
 
   void _initializeChewie() {
-    String videoPath = 'lib/res/voXPAD.mp4'; // Update with your correct asset path
+    String videoPath = 'lib/res/voXPAD.mp4';
     _videoPlayerController = VideoPlayerController.asset(videoPath);
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
       autoPlay: true,
-      looping: true,
+      looping: false,
       showControls: false,
       allowFullScreen: false,
     );
 
     _videoPlayerController.initialize().then((_) {
       setState(() {});
-    }).catchError((error) {
-    });
 
-    _videoPlayerController.addListener(() {
-      if (_videoPlayerController.value.isCompleted) {
-        // Handle completion if needed
+      _videoPlayerController.addListener(() {
+        if (_videoPlayerController.value.position == _videoPlayerController.value.duration) {
+          _hasPlayedOnce = true;
+          _chewieController = ChewieController(
+            videoPlayerController: _videoPlayerController,
+            autoPlay: true,
+            looping: true,
+            showControls: false,
+            allowFullScreen: false,
+          );
+          _initializeApp();
+        }
+      });
+    }).catchError((error) {
+      if (kDebugMode) {
+        print('Failed to initialize video: $error');
       }
     });
   }
@@ -86,12 +140,26 @@ class _SplashScreenState extends State<SplashScreen> {
             ? _videoPlayerController.value.isInitialized
             ? AspectRatio(
           aspectRatio: _videoPlayerController.value.aspectRatio,
-          child: VideoPlayer(_videoPlayerController),
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: _videoPlayerController.value.size.width,
+              height: _videoPlayerController.value.size.height,
+              child: VideoPlayer(_videoPlayerController),
+            ),
+          ),
         )
             : const CircularProgressIndicator()
             : _chewieController.videoPlayerController.value.isInitialized
-            ? Chewie(
-          controller: _chewieController,
+            ? FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: _chewieController.videoPlayerController.value.size.width,
+            height: _chewieController.videoPlayerController.value.size.height,
+            child: Chewie(
+              controller: _chewieController,
+            ),
+          ),
         )
             : const CircularProgressIndicator(),
       ),
