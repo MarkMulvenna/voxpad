@@ -1,15 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:vox_pad/logic/services/TokenService.dart';
 
 class WebServices {
-  String baseUrl = "/api/v1.0/";
-  String token;
+  String baseUrl;
 
-  WebServices(this.baseUrl, this.token);
+  WebServices(this.baseUrl);
 
-  Future<Map<String, dynamic>> getRequest(String endpoint) async {
-    final url = Uri.https(baseUrl, endpoint);
+  Future<dynamic> getRequest(String endpoint) async {
+    final url = Uri.parse('$baseUrl$endpoint');
     final response = await http.get(
       url,
       headers: _createHeaders(),
@@ -23,7 +21,7 @@ class WebServices {
   }
 
   Future<Map<String, dynamic>> postRequest(String endpoint, Map<String, dynamic> body) async {
-    final url = Uri.https(baseUrl, endpoint);
+    final url = Uri.parse('$baseUrl$endpoint');
     final response = await http.post(
       url,
       headers: _createHeaders(),
@@ -31,14 +29,14 @@ class WebServices {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return jsonDecode(response.body) as Map<String, dynamic>;
     } else {
       throw Exception('Failed to post data');
     }
   }
 
   Future<Map<String, dynamic>> putRequest(String endpoint, Map<String, dynamic> body) async {
-    final url = Uri.https(baseUrl, endpoint);
+    final url = Uri.parse('$baseUrl$endpoint');
     final response = await http.put(
       url,
       headers: _createHeaders(),
@@ -46,14 +44,14 @@ class WebServices {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return jsonDecode(response.body) as Map<String, dynamic>;
     } else {
       throw Exception('Failed to update data');
     }
   }
 
   Future<void> deleteRequest(String endpoint) async {
-    final url = Uri.https(baseUrl, endpoint);
+    final url = Uri.parse('$baseUrl$endpoint');
     final response = await http.delete(
       url,
       headers: _createHeaders(),
@@ -64,9 +62,9 @@ class WebServices {
     }
   }
 
-  Future<bool> testConnection(String endpoint) async {
+  Future<bool> testConnection() async {
     try {
-      final url = Uri.https(baseUrl, endpoint);
+      final url = Uri.parse('$baseUrl/startup');
       final response = await http.get(
         url,
         headers: _createHeaders(),
@@ -80,10 +78,8 @@ class WebServices {
   }
 
   Map<String, String> _createHeaders() {
-    String token = TokenManager.getToken() as String;
     return {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
     };
   }
 }
