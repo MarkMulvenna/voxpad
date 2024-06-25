@@ -2,5 +2,6 @@ enum SettingCategory {
   General,
   Appearance,
   Layout,
-  WebConfiguration
+  WebConfiguration,
+  Miscellaneous
 }

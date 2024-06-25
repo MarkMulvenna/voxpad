@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+import '../data/enums/SettingCategory.dart';
+import '../data/enums/SettingsValueModifiers.dart';
 import '../data/objects/StateManager.dart';
 import '../data/objects/TaskExtenders/Setting.dart';
 import 'WebsiteServices.dart';
@@ -11,23 +14,29 @@ class SettingsService {
   Future<void> fetchAndSetSettings() async {
     try {
       final response = await webServices.getRequest('/settings');
-      if (response is List) {
-        List<Setting> settings = response.map((json) => Setting.fromJson(json as Map<String, dynamic>)).toList();
-        stateManager.settings = settings;
-      } else {
-        throw Exception('Unexpected response format');
-      }
+      List<dynamic> settingsJsonList = response['settings'];
+      List<Setting> settings = settingsJsonList.map((json) => Setting.fromJson(json)).toList();
+      stateManager.settings = settings;
     } catch (e) {
       throw Exception('Failed to fetch settings: $e');
     }
   }
 
-  dynamic getSettingValue(String name, {dynamic defaultValue}) {
+  dynamic getSettingValue(String name, {dynamic defaultValue, SettingsValueModifiers valueModifier = SettingsValueModifiers.None}) {
     var setting = stateManager.settings.firstWhere(
           (setting) => setting.name == name,
-      orElse: () => Setting(null, name, null, null, defaultValue),
+      orElse: () => Setting(
+        name: name,
+        category: SettingCategory.Miscellaneous,
+        value: defaultValue,
+        valueModifier: valueModifier,
+      ),
     );
-    return setting.value ?? defaultValue;
+    if (setting.value != null) {
+      return setting.value;
+    } else {
+      return defaultValue;
+    }
   }
 
   List<Setting> getAllSettings() {
@@ -47,7 +56,6 @@ class SettingsService {
   Future<void> updateSetting(String id, Setting setting) async {
     try {
       await webServices.putRequest('/settings/$id', setting.toJson());
-      stateManager.updateSetting(id, setting);
     } catch (e) {
       throw Exception('Failed to update setting: $e');
     }
@@ -56,7 +64,6 @@ class SettingsService {
   Future<void> deleteSetting(String id) async {
     try {
       await webServices.deleteRequest('/settings/$id');
-      stateManager.deleteSetting(id);
     } catch (e) {
       throw Exception('Failed to delete setting: $e');
     }

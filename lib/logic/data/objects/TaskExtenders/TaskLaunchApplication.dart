@@ -11,14 +11,14 @@ class TaskLaunchApplication extends Task {
   String filePath;
 
   TaskLaunchApplication(
-      String id,
-      String name,
-      String description,
-      TaskType taskType,
-      TaskStatus taskStatus,
-      String? image,
+      super.id,
+      super.name,
+      super.description,
+      super.taskType,
+      super.taskStatus,
+      super.image,
       this.filePath,
-      ) : super(id, name, description, taskType, taskStatus, image);
+      );
 
   factory TaskLaunchApplication.fromJson(Map<String, dynamic> json) => _$TaskLaunchApplicationFromJson(json);
   @override
