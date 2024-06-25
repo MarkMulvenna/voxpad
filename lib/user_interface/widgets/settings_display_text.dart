@@ -1,20 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class SettingsDisplayText extends StatelessWidget {
+class SettingsDisplayText extends StatefulWidget {
   final String label;
   final String value;
   final bool intOnly;
-  final int? maxValue;  // Add maxValue parameter
+  final int? maxValue;
   final ValueChanged<String> onChanged;
 
-  const SettingsDisplayText({super.key,
+  const SettingsDisplayText({
+    super.key,
     required this.label,
     required this.value,
     required this.intOnly,
     this.maxValue,
     required this.onChanged,
   });
+
+  @override
+  _SettingsDisplayTextState createState() => _SettingsDisplayTextState();
+}
+
+class _SettingsDisplayTextState extends State<SettingsDisplayText> {
+  late TextEditingController _controller;
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.value);
+    _focusNode = FocusNode();
+
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus) {
+        _handleChange(_controller.text);
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant SettingsDisplayText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != _controller.text) {
+      _controller.text = widget.value;
+    }
+  }
+
+  void _handleChange(String newValue) {
+    if (widget.intOnly && widget.maxValue != null) {
+      int intValue = int.tryParse(newValue) ?? widget.maxValue!;
+      if (intValue > widget.maxValue!) {
+        intValue = widget.maxValue!;
+        _controller.text = intValue.toString();
+      }
+      widget.onChanged(intValue.toString());
+    } else {
+      widget.onChanged(newValue);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +74,7 @@ class SettingsDisplayText extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            label,
+            widget.label,
             style: const TextStyle(
               fontSize: 18.0,
               color: Colors.black87,
@@ -40,22 +83,12 @@ class SettingsDisplayText extends StatelessWidget {
           SizedBox(
             width: 150.0,
             child: TextField(
-              controller: TextEditingController(text: value),
-              keyboardType: intOnly ? TextInputType.number : TextInputType.text,
-              inputFormatters: intOnly
+              focusNode: _focusNode,
+              controller: _controller,
+              keyboardType: widget.intOnly ? TextInputType.number : TextInputType.text,
+              inputFormatters: widget.intOnly
                   ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
                   : <TextInputFormatter>[],
-              onChanged: (newValue) {
-                if (intOnly && maxValue != null) {
-                  int intValue = int.tryParse(newValue) ?? maxValue!;
-                  if (intValue > maxValue!) {
-                    intValue = maxValue!;
-                  }
-                  onChanged(intValue.toString());
-                } else {
-                  onChanged(newValue);
-                }
-              },
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
                 border: OutlineInputBorder(
@@ -72,5 +105,12 @@ class SettingsDisplayText extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
   }
 }

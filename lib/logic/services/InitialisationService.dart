@@ -26,7 +26,7 @@ class InitialisationService {
         if (await stateManager.webServices.testConnection()) {
           bool settingsLoaded = await loadSettingsAndScreens();
           if (settingsLoaded) {
-            setThemeColors(settingsService, stateManager);  // Call the function from theme_helper.dart
+            setThemeColors(settingsService, stateManager);
           }
           return settingsLoaded;
         }
