@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vox_pad/logic/data/objects/ServerConfiguration.dart';
 import 'package:vox_pad/logic/services/ServerConfigurationService.dart';
-import 'package:vox_pad/logic/services/WebsiteServices.dart';
 import '../../logic/services/NetworkService.dart';
 
 class ConnectionScreen extends StatefulWidget {

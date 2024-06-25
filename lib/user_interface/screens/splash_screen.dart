@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:provider/provider.dart';
 import 'package:vox_pad/logic/data/objects/StateManager.dart';
 import 'package:vox_pad/logic/services/ServerConfigurationService.dart';
-import 'package:vox_pad/logic/services/SettingsService.dart';
 import 'package:vox_pad/logic/services/InitialisationService.dart';
 import 'package:vox_pad/user_interface/screens/connection_screen.dart';
 import 'package:vox_pad/user_interface/screens/main_menu.dart';
@@ -22,7 +21,6 @@ class _SplashScreenState extends State<SplashScreen> {
   late VideoPlayerController _videoPlayerController;
   late ChewieController _chewieController;
   late InitialisationService _initialisationService;
-  bool _hasPlayedOnce = false;
 
   @override
   void initState() {
@@ -83,7 +81,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
       _videoPlayerController.addListener(() {
         if (_videoPlayerController.value.position == _videoPlayerController.value.duration) {
-          _hasPlayedOnce = true;
           _videoPlayerController.setLooping(true);
           _videoPlayerController.play();
           _initializeApp();
@@ -112,7 +109,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
       _videoPlayerController.addListener(() {
         if (_videoPlayerController.value.position == _videoPlayerController.value.duration) {
-          _hasPlayedOnce = true;
           _chewieController = ChewieController(
             videoPlayerController: _videoPlayerController,
             autoPlay: true,

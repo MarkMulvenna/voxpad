@@ -25,6 +25,7 @@ dependencies:
   chewie: ^1.8.1
   video_player: ^2.8.7
   video_player_win: ^2.3.8
+  provider: ^6.1.2
 
 
 dev_dependencies:

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import '../data/enums/SettingCategory.dart';
 import '../data/enums/SettingsValueModifiers.dart';
 import '../data/objects/StateManager.dart';
