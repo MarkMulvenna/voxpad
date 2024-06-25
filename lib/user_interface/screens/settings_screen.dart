@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:vox_pad/user_interface/widgets/settings_category_list.dart';
-import 'package:vox_pad/user_interface/widgets/settings_display_on_off.dart';
-import 'package:vox_pad/user_interface/widgets/settings_display_text.dart';
-
+import 'package:provider/provider.dart';
+import '../../logic/data/enums/SettingsValueModifiers.dart';
+import '../../logic/data/objects/StateManager.dart';
+import '../../logic/data/objects/TaskExtenders/Setting.dart';
+import '../widgets/settings_category_list.dart';
+import '../widgets/settings_display_on_off.dart';
+import '../widgets/settings_display_text.dart';
+import '../widgets/settings_display_list.dart';
 import '../widgets/back_button.dart';
 import 'main_menu.dart';
 
@@ -15,24 +19,19 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   int selectedCategoryIndex = 0;
-  final List<String> categories = [
-    'General',
-    'Account',
-    'Notifications',
-    'Privacy',
-    'About',
-  ];
+  List<Setting> localSettings = [];
+  bool settingsChanged = false;
 
-  final Map<String, String> settingsValues = {
-    'Setting 1': 'Value 1',
-    'Setting 2': 'Value 2',
-    'Setting 3': 'Value 3',
-  };
+  @override
+  void initState() {
+    super.initState();
+    _initializeLocalSettings();
+  }
 
-  final Map<String, bool> switchValues = {
-    'Toggle 1': true,
-    'Toggle 2': false,
-  };
+  void _initializeLocalSettings() {
+    final stateManager = Provider.of<StateManager>(context, listen: false);
+    localSettings = List<Setting>.from(stateManager.settings.map((setting) => Setting.fromJson(setting.toJson())));
+  }
 
   void _onCategorySelected(int index) {
     setState(() {
@@ -40,96 +39,176 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  void _onSettingChanged(String key, String value) {
-    setState(() {
-      settingsValues[key] = value;
-    });
+  void _onSettingChanged(Setting updatedSetting) {
+    final index = localSettings.indexWhere((setting) => setting.id == updatedSetting.id);
+    if (index != -1) {
+      setState(() {
+        localSettings[index] = updatedSetting;
+        settingsChanged = true;
+      });
+    }
   }
 
-  void _onSwitchChanged(String key, bool value) {
-    setState(() {
-      switchValues[key] = value;
-    });
-  }
+  void _saveSettings() async {
+    final stateManager = Provider.of<StateManager>(context, listen: false);
 
-  Widget _buildSettingsContent() {
-    if (selectedCategoryIndex == 0) {
-      // General category
-      return Column(
-        children: [
-          SettingsDisplayText(
-            label: 'Setting 1',
-            value: settingsValues['Setting 1']!,
-            intOnly: false,
-            onChanged: (newValue) => _onSettingChanged('Setting 1', newValue),
-          ),
-          SettingsDisplayText(
-            label: 'Setting 2',
-            value: settingsValues['Setting 2']!,
-            intOnly: true,
-            onChanged: (newValue) => _onSettingChanged('Setting 2', newValue),
-          ),
-          SettingsDisplayText(
-            label: 'Setting 3',
-            value: settingsValues['Setting 3']!,
-            intOnly: false,
-            onChanged: (newValue) => _onSettingChanged('Setting 3', newValue),
-          ),
-          SettingsDisplayOnOff(
-            label: 'Toggle 1',
-            value: switchValues['Toggle 1']!,
-            onChanged: (newValue) => _onSwitchChanged('Toggle 1', newValue),
-          ),
-          SettingsDisplayOnOff(
-            label: 'Toggle 2',
-            value: switchValues['Toggle 2']!,
-            onChanged: (newValue) => _onSwitchChanged('Toggle 2', newValue),
-          ),
-        ],
+    for (final setting in localSettings) {
+      final originalSetting = stateManager.settings.firstWhere((s) => s.id == setting.id);
+      if (originalSetting.value != setting.value) {
+        await stateManager.updateSetting(setting.id!, setting);
+        settingsChanged = true;
+      }
+    }
+
+    if (settingsChanged && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Settings saved successfully!')),
       );
-    } else {
-      // Placeholder for other categories
-      return Center(
-        child: Text(
-          'Settings for ${categories[selectedCategoryIndex]}',
-          style: const TextStyle(fontSize: 24),
-        ),
+      setState(() {
+        settingsChanged = false;
+      });
+    }
+  }
+
+  Widget _buildSettingsContent(List<Setting> settings) {
+    if (settings.isEmpty) {
+      return const Center(
+        child: Text('No settings available for this category'),
       );
     }
+
+    return Column(
+      children: settings.map((setting) {
+        switch (setting.valueModifier) {
+          case SettingsValueModifiers.TrueFalse:
+            return SettingsDisplayOnOff(
+              label: setting.name!,
+              value: setting.value as bool,
+              onChanged: (newValue) {
+                setting.value = newValue;
+                _onSettingChanged(setting);
+              },
+            );
+          case SettingsValueModifiers.IntOnly:
+            return SettingsDisplayText(
+              label: setting.name!,
+              value: setting.value.toString(),
+              intOnly: true,
+              maxValue: setting.max,
+              onChanged: (newValue) {
+                int parsedValue = int.tryParse(newValue) ?? 0;
+                if (setting.max != null && parsedValue > setting.max!) {
+                  parsedValue = setting.max!;
+                }
+                setting.value = parsedValue;
+                _onSettingChanged(setting);
+              },
+            );
+          case SettingsValueModifiers.List:
+            return SettingsDisplayList(
+              label: setting.name!,
+              value: (setting.value as List<dynamic>).join(', '),
+              onChanged: (newValue) {
+                setting.value = newValue.split(',').map((e) => e.trim()).toList();
+                _onSettingChanged(setting);
+              },
+            );
+          case SettingsValueModifiers.None:
+          default:
+            return SettingsDisplayText(
+              label: setting.name!,
+              value: setting.value.toString(),
+              intOnly: false,
+              onChanged: (newValue) {
+                setting.value = newValue;
+                _onSettingChanged(setting);
+              },
+            );
+        }
+      }).toList(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final stateManager = Provider.of<StateManager>(context);
+    final categories = stateManager.settings
+        .map((setting) => setting.category.toString().split('.').last)
+        .toSet()
+        .toList();
+
+    if (categories.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.blueGrey,
+          title: const Row(
+            children: [
+              BackButtonWidget(destination: MainMenu()),
+              SizedBox(width: 8),
+              Text('Settings'),
+            ],
+          ),
+        ),
+        body: const Center(
+          child: Text('No categories available'),
+        ),
+      );
+    }
+
+    final currentCategory = categories[selectedCategoryIndex];
+    final settings = localSettings
+        .where((setting) => setting.category.toString().split('.').last == currentCategory)
+        .toList();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
         title: const Row(
           children: [
-            BackButtonWidget(destination: MainMenu(columns: 4, rows: 3)),
+            BackButtonWidget(destination: MainMenu()),
             SizedBox(width: 8),
             Text('Settings'),
           ],
         ),
       ),
-      body: Row(
+      body: Column(
         children: [
-          // Left part - Categories
-          Container(
-            width: MediaQuery.of(context).size.width * 0.25,
-            color: Colors.grey[200],
-            child: SettingsCategoryList(
-              categories: categories,
-              onCategorySelected: _onCategorySelected,
-              selectedIndex: selectedCategoryIndex,
+          Expanded(
+            child: Row(
+              children: [
+                // Left part - Categories
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  color: Colors.grey[200],
+                  child: SettingsCategoryList(
+                    categories: categories,
+                    onCategorySelected: _onCategorySelected,
+                    selectedIndex: selectedCategoryIndex,
+                  ),
+                ),
+                // Right part - Settings widgets
+                Expanded(
+                  child: Container(
+                    color: Colors.grey[100],
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: _buildSettingsContent(settings),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          // Right part - Settings widgets
-          Expanded(
-            child: Container(
-              color: Colors.grey[100],
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: _buildSettingsContent(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                onPressed: _saveSettings,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue, // Button color
+                ),
+                child: const Text('Save'),
               ),
             ),
           ),

@@ -32,8 +32,6 @@ class SettingsService {
         valueModifier: valueModifier,
       ),
     );
-
-    // Check if setting is found and its value is not null
     if (setting.value != null) {
       return setting.value;
     } else {
@@ -58,7 +56,6 @@ class SettingsService {
   Future<void> updateSetting(String id, Setting setting) async {
     try {
       await webServices.putRequest('/settings/$id', setting.toJson());
-      stateManager.updateSetting(id, setting);
     } catch (e) {
       throw Exception('Failed to update setting: $e');
     }
@@ -67,7 +64,6 @@ class SettingsService {
   Future<void> deleteSetting(String id) async {
     try {
       await webServices.deleteRequest('/settings/$id');
-      stateManager.deleteSetting(id);
     } catch (e) {
       throw Exception('Failed to delete setting: $e');
     }

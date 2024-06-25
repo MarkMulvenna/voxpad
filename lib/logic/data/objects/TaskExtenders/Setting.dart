@@ -12,6 +12,7 @@ class Setting {
   SettingCategory category;
   dynamic value;
   SettingsValueModifiers valueModifier;
+  int? max;
 
   Setting({
     this.id,
@@ -20,6 +21,7 @@ class Setting {
     this.category = SettingCategory.Miscellaneous,
     this.value,
     this.valueModifier = SettingsValueModifiers.None,
+    this.max
   });
 
   factory Setting.fromJson(Map<String, dynamic> json) => _$SettingFromJson(json);

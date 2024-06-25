@@ -4,6 +4,7 @@ import '../data/objects/ServerConfiguration.dart';
 import '../data/objects/StateManager.dart';
 import 'ServerConfigurationService.dart';
 import 'SettingsService.dart';
+import 'ThemeManager.dart';
 
 class InitialisationService {
   final ServerConfigurationService serverConfigurationService;
@@ -25,7 +26,7 @@ class InitialisationService {
         if (await stateManager.webServices.testConnection()) {
           bool settingsLoaded = await loadSettingsAndScreens();
           if (settingsLoaded) {
-            _setThemeColors();
+            setThemeColors(settingsService, stateManager);  // Call the function from theme_helper.dart
           }
           return settingsLoaded;
         }
@@ -50,30 +51,5 @@ class InitialisationService {
       }
     }
     return false;
-  }
-
-  void _setThemeColors() {
-    String primaryColorString = settingsService.getSettingValue("PrimaryColour", defaultValue: "Colors.pink");
-    String secondaryColorString = settingsService.getSettingValue("SecondaryColor", defaultValue: "Colors.blue");
-
-    stateManager.primaryColor = _colorFromString(primaryColorString);
-    stateManager.secondaryColor = _colorFromString(secondaryColorString);
-  }
-
-  Color _colorFromString(String colorString) {
-    switch (colorString) {
-      case "Colors.pink":
-        return Colors.pink;
-      case "Colors.blue":
-        return Colors.blue;
-      case "Colors.red":
-        return Colors.red;
-      case "Colors.green":
-        return Colors.green;
-      case "Colors.orange":
-        return Colors.orange;
-      default:
-        return Colors.pink;
-    }
   }
 }

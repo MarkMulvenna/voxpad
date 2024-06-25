@@ -5,12 +5,14 @@ class SettingsDisplayText extends StatelessWidget {
   final String label;
   final String value;
   final bool intOnly;
+  final int? maxValue;  // Add maxValue parameter
   final ValueChanged<String> onChanged;
 
-  const SettingsDisplayText({super.key, 
+  const SettingsDisplayText({super.key,
     required this.label,
     required this.value,
     required this.intOnly,
+    this.maxValue,
     required this.onChanged,
   });
 
@@ -43,7 +45,17 @@ class SettingsDisplayText extends StatelessWidget {
               inputFormatters: intOnly
                   ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
                   : <TextInputFormatter>[],
-              onChanged: onChanged,
+              onChanged: (newValue) {
+                if (intOnly && maxValue != null) {
+                  int intValue = int.tryParse(newValue) ?? maxValue!;
+                  if (intValue > maxValue!) {
+                    intValue = maxValue!;
+                  }
+                  onChanged(intValue.toString());
+                } else {
+                  onChanged(newValue);
+                }
+              },
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
                 border: OutlineInputBorder(

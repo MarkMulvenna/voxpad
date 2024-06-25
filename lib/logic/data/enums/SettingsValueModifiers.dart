@@ -1,6 +1,6 @@
 enum SettingsValueModifiers {
   TrueFalse,
   IntOnly,
-  MappedValue,
+  List,
   None
 }

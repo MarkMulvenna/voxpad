@@ -17,6 +17,7 @@ Setting _$SettingFromJson(Map<String, dynamic> json) => Setting(
       valueModifier: $enumDecodeNullable(
               _$SettingsValueModifiersEnumMap, json['valueModifier']) ??
           SettingsValueModifiers.None,
+      max: (json['max'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$SettingToJson(Setting instance) => <String, dynamic>{
@@ -26,6 +27,7 @@ Map<String, dynamic> _$SettingToJson(Setting instance) => <String, dynamic>{
       'category': _$SettingCategoryEnumMap[instance.category]!,
       'value': instance.value,
       'valueModifier': _$SettingsValueModifiersEnumMap[instance.valueModifier]!,
+      'max': instance.max,
     };
 
 const _$SettingCategoryEnumMap = {
@@ -39,6 +41,6 @@ const _$SettingCategoryEnumMap = {
 const _$SettingsValueModifiersEnumMap = {
   SettingsValueModifiers.TrueFalse: 'TrueFalse',
   SettingsValueModifiers.IntOnly: 'IntOnly',
-  SettingsValueModifiers.MappedValue: 'MappedValue',
+  SettingsValueModifiers.List: 'List',
   SettingsValueModifiers.None: 'None',
 };

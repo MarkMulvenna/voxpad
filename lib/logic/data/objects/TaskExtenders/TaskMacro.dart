@@ -10,14 +10,14 @@ class TaskMacro extends Task {
   List<String> keys;
 
   TaskMacro(
-      String id,
-      String name,
-      String description,
-      TaskType taskType,
-      TaskStatus taskStatus,
-      String? image,
+      super.id,
+      super.name,
+      super.description,
+      super.taskType,
+      super.taskStatus,
+      super.image,
       this.keys,
-      ) : super(id, name, description, taskType, taskStatus, image);
+      );
 
   factory TaskMacro.fromJson(Map<String, dynamic> json) => _$TaskMacroFromJson(json);
   @override

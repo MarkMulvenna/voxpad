@@ -44,10 +44,9 @@ class _SplashScreenState extends State<SplashScreen> {
     bool initialised = await _initialisationService.initialise();
     if (mounted) {
       if (initialised) {
-        var buttonLayout = _initialisationService.settingsService.getSettingValue("ButtonLayout", defaultValue: [3, 4]);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MainMenu(columns: buttonLayout[0], rows: buttonLayout[1])),
+          MaterialPageRoute(builder: (context) => const MainMenu()),
         );
       } else {
         Navigator.pushReplacement(
