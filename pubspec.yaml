@@ -25,7 +25,7 @@ dependencies:
   chewie: ^1.8.1
   video_player: ^2.8.7
   video_player_win: ^2.3.8
-
+  file_picker: ^8.0.5
 
 dev_dependencies:
   flutter_test:

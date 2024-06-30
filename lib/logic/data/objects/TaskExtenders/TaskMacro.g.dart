@@ -7,7 +7,7 @@ part of 'TaskMacro.dart';
 // **************************************************************************
 
 TaskMacro _$TaskMacroFromJson(Map<String, dynamic> json) => TaskMacro(
-      json['id'] as String,
+      json['id'] as String?,
       json['name'] as String,
       json['description'] as String,
       $enumDecode(_$TaskTypeEnumMap, json['taskType']),
@@ -30,6 +30,7 @@ const _$TaskTypeEnumMap = {
   TaskType.ApplicationRun: 'ApplicationRun',
   TaskType.MediaInteraction: 'MediaInteraction',
   TaskType.Macro: 'Macro',
+  TaskType.OpenWebsite: 'OpenWebsite',
   TaskType.ThirdPartyIntegration: 'ThirdPartyIntegration',
 };
 

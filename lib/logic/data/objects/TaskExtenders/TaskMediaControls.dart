@@ -6,11 +6,12 @@ import '../../enums/TaskType.dart';
 import 'Task.dart';
 
 
-part 'TaskMediaControls.g.dart'; // Add this line
+part 'TaskMediaControls.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class TaskMediaControls extends Task {
-  List<MediaAction> mediaActions;
+  MediaAction mediaAction;
+  VolumeAction? volumeAction;
 
   TaskMediaControls(
       super.id,
@@ -19,7 +20,8 @@ class TaskMediaControls extends Task {
       super.taskType,
       super.taskStatus,
       super.image,
-      this.mediaActions,
+      this.mediaAction,
+      this.volumeAction,
       );
 
   factory TaskMediaControls.fromJson(Map<String, dynamic> json) => _$TaskMediaControlsFromJson(json);

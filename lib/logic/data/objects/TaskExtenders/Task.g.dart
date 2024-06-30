@@ -7,7 +7,7 @@ part of 'Task.dart';
 // **************************************************************************
 
 Task _$TaskFromJson(Map<String, dynamic> json) => Task(
-      json['id'] as String,
+      json['id'] as String?,
       json['name'] as String,
       json['description'] as String,
       $enumDecode(_$TaskTypeEnumMap, json['taskType']),
@@ -28,6 +28,7 @@ const _$TaskTypeEnumMap = {
   TaskType.ApplicationRun: 'ApplicationRun',
   TaskType.MediaInteraction: 'MediaInteraction',
   TaskType.Macro: 'Macro',
+  TaskType.OpenWebsite: 'OpenWebsite',
   TaskType.ThirdPartyIntegration: 'ThirdPartyIntegration',
 };
 

@@ -7,12 +7,12 @@ class GradientButton extends StatelessWidget {
   final double buttonSize;
 
   const GradientButton({
-    Key? key,
+    super.key,
     required this.gradientColors,
     required this.imagePath,
     required this.labelText,
     required this.buttonSize,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,6 @@ class GradientButton extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // Handle button tap
           },
           child: Center(
             child: Column(
