@@ -6,7 +6,7 @@ part 'Task.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Task {
-  String id;
+  String? id;
   String name;
   String description;
   TaskType taskType;

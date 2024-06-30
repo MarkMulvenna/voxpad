@@ -1,25 +1,23 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'TaskLaunchApplication.dart';
+part of 'TaskOpenWebsite.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-TaskLaunchApplication _$TaskLaunchApplicationFromJson(
-        Map<String, dynamic> json) =>
-    TaskLaunchApplication(
+TaskOpenWebsite _$TaskOpenWebsiteFromJson(Map<String, dynamic> json) =>
+    TaskOpenWebsite(
       json['id'] as String?,
       json['name'] as String,
       json['description'] as String,
       $enumDecode(_$TaskTypeEnumMap, json['taskType']),
       $enumDecode(_$TaskStatusEnumMap, json['taskStatus']),
       json['image'] as String?,
-      json['filePath'] as String,
+      json['webURL'] as String,
     );
 
-Map<String, dynamic> _$TaskLaunchApplicationToJson(
-        TaskLaunchApplication instance) =>
+Map<String, dynamic> _$TaskOpenWebsiteToJson(TaskOpenWebsite instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
@@ -27,7 +25,7 @@ Map<String, dynamic> _$TaskLaunchApplicationToJson(
       'taskType': _$TaskTypeEnumMap[instance.taskType]!,
       'taskStatus': _$TaskStatusEnumMap[instance.taskStatus]!,
       'image': instance.image,
-      'filePath': instance.filePath,
+      'webURL': instance.webURL,
     };
 
 const _$TaskTypeEnumMap = {
